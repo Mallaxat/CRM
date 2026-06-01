@@ -1,0 +1,131 @@
+﻿<Window x:Class="CRM.Registration_Window"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CRM"
+        mc:Ignorable="d"
+        Title="Registration_Window" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid Background="#1e2248" ShowGridLines="False" >
+        <!--Настройки сетки-->
+        <!--#region -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <!--#endregion-->
+
+        <GroupBox Background="#FFDEE5E8" 
+                  Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"
+                  Margin="0,0,0,0" >
+
+            <Grid  ShowGridLines="False">
+                <!--Настройки сетки-->
+                <!--#region -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="0.5*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+
+
+                </Grid.ColumnDefinitions>
+                <!--#endregion-->
+                <!--Кнопки-->
+                <!--#region -->
+                <Button x:Name="bt_Login" Content="Войти"
+                        Grid.Column="1" Grid.ColumnSpan="4" 
+                        Grid.Row="6"  VerticalAlignment="Stretch"
+                        Margin="5,5,0,5"  
+                        Height="Auto" Width="Auto"
+                        Command="{Binding cLogin}" Click="bt_Login_Click"/>
+
+                <Button x:Name="bt_Registr" Content="Зарегестрироваться"
+                        Grid.Column="1" Grid.ColumnSpan="4" 
+                        Grid.Row="5"  VerticalAlignment="Stretch"
+                        Margin="5,5,0,5"  
+                        Height="Auto" Width="Auto" 
+                        Command="{Binding cRegistration}"/>
+                
+                <!--#endregion-->
+                <!--Логин-->
+                <!--#region -->
+                <Label x:Name="label_Name" Content="Логин"
+                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Margin="0,0,0,0" 
+                       Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" FontSize="10"/>
+
+                <Border x:Name="bor_Name" Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="1">
+                    <TextBox x:Name="tb_Name"  Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"
+                             Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="1"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                            Margin="5,5,5,5" TextWrapping="WrapWithOverflow" 
+                             MinWidth="160" 
+                             Width="Auto" Height="Auto" FontSize="12" TextAlignment="Left" 
+                             />
+                </Border>
+                <!--#endregion-->
+
+                <!--Пароль-->
+                <!--#region -->
+                <Label x:Name="label_Password" Content="Пароль"
+                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Margin="0,0,0,0" 
+                       Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" FontSize="10" />
+                <Border x:Name="bor_Password" Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="3">
+                    <PasswordBox x:Name="tb_Password" 
+                         Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="3"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                         Margin="5,5,5,5" 
+                         MinWidth="160" 
+                         Width="Auto" Height="Auto" FontSize="20" PasswordChar="*"/>
+                </Border>
+                <!--#endregion-->
+
+                <!--Сотрудники-->
+                <!--#region -->
+                <Label x:Name="label_level" Content="Доступ"
+                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Margin="0,0,0,0" 
+                       Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" FontSize="10" Visibility="Collapsed" 
+                       />
+                <Border x:Name="bor_Roles" Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="3">
+                    <ComboBox x:Name="list_Roles" 
+                          Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="3"
+                           Visibility="Collapsed" Margin="5,5,5,5" />
+                </Border>
+                <!--#endregion-->
+            </Grid>
+        </GroupBox>
+
+
+
+
+
+
+
+
+    </Grid>
+</Window>

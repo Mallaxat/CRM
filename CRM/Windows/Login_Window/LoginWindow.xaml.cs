@@ -1,0 +1,48 @@
+﻿using CRM.Properties;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace CRM
+{
+    /// <summary>
+    /// Логика взаимодействия для Registration_Window.xaml
+    /// </summary>
+    public partial class Registration_Window : Window
+    {
+        VM_Login _vm ;
+        Settings _settings ;
+        //MessageeServise serviceMessagee;
+        //WindowService serviceWindow;
+        
+        public Registration_Window()
+        {
+            InitializeComponent();
+            _settings = new Settings(new MessageeServise(this), new WindowService(),new User());
+            //serviceMessagee = new MessageeServise(this);
+            //serviceWindow = new WindowService();
+            
+
+            _vm = new VM_Login(_settings);
+
+            DataContext = _vm;
+
+        }
+
+        private void bt_Login_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.Password = tb_Password.SecurePassword.Copy();
+            tb_Password.Clear();
+        }
+    }
+}

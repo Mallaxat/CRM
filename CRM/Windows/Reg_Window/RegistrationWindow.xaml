@@ -1,0 +1,135 @@
+﻿<Window x:Class="CRM.RegistrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CRM"
+        mc:Ignorable="d"
+         Title="Создать аккаунт" MinHeight="500" MinWidth="350"  MaxHeight="500" MaxWidth="350">
+    <Grid ShowGridLines="False"
+          Background="#1e2248" Margin="0,0,0,-6" >
+        <!--Сетка-->
+        <!--#region -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <!--#endregion-->
+
+        <Label x:Name="lb_heading" 
+                 Grid.Column="0" Grid.Row="0" 
+                 Grid.ColumnSpan="5"
+                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                 Margin="0,0,0,0" Content="Регистрация" Foreground="White" FontSize="20" />
+
+        <Label x:Name="lb_Name" 
+                 Grid.Column="0" Grid.Row="1" 
+                 Grid.ColumnSpan="2"
+                 HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                 Margin="5,5,5,0" Content="Имя" Foreground="White" />
+
+        <TextBox x:Name="tb_Name" 
+                 Grid.Column="2" Grid.Row="1" 
+                 Grid.ColumnSpan="3" VerticalAlignment="Stretch"
+                 Margin="5,15,10,15" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+
+
+        <Label x:Name="lb_fName" 
+                 Grid.Column="0" Grid.Row="2" 
+                 Grid.ColumnSpan="2"
+                 HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                 Margin="5,5,5,0" Content="Фамилия" Foreground="White" />
+
+
+        <TextBox x:Name="tb_fName" 
+                Grid.Column="2" Grid.Row="2" 
+                Grid.ColumnSpan="3"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Margin="5,15,10,15" Text="{Binding FName, UpdateSourceTrigger=PropertyChanged}" />
+
+
+        <Label x:Name="lb_tName" 
+                Grid.Column="0" Grid.Row="3" 
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                Margin="5,5,5,0" Content="Отчество" Foreground="White" />
+
+
+        <TextBox x:Name="tb_tName" 
+                Grid.Column="2" Grid.Row="3" 
+                Grid.ColumnSpan="3"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Margin="5,15,10,15" Text="{Binding Patronymic, UpdateSourceTrigger=PropertyChanged}" />
+
+
+        <Label x:Name="lb_login" 
+                Grid.Column="0" Grid.Row="4" 
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                Margin="5,5,5,0" Content="Логин" Foreground="White" />
+
+
+        <TextBox x:Name="tb_login" 
+                Grid.Column="2" Grid.Row="4" 
+                Grid.ColumnSpan="3"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Margin="5,15,10,15" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" />
+
+
+        <Label x:Name="lb_Pass" 
+                Grid.Column="0" Grid.Row="5" 
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                Margin="5,5,5,0" Content="Пароль" Foreground="White" />
+
+        <StackPanel Grid.Column="2" Grid.Row="5" 
+Grid.ColumnSpan="3">
+
+            <PasswordBox x:Name="tb_Pass" 
+                Grid.Column="2" Grid.Row="5" 
+                Grid.ColumnSpan="3"
+                HorizontalAlignment="Stretch"
+                Margin="5,5,10,5" PasswordChar="*" PasswordChanged="tb_Pass_PasswordChanged" Height="30"  />
+
+            <Label x:Name="lb_PassOptions" 
+                Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="6" 
+                HorizontalAlignment="Center" VerticalAlignment="Top"
+                Content="Пароль должен состоять из 5 символов" Foreground="White" FontSize="10" />
+
+        </StackPanel>
+
+
+        <Label x:Name="lb_post" 
+                Grid.Column="0" Grid.Row="6" 
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                Margin="5,5,5,0" Content="Должность" Foreground="White" />
+
+        <ComboBox x:Name="list_post"   
+                Grid.Column="2" Grid.Row="6" 
+                Grid.ColumnSpan="3" 
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Margin="5,15,10,15" ItemsSource="{Binding Posts}" SelectedItem="{Binding SelectPosts}"/>
+        
+        <Button x:Name="bt_enter" Content="Зарегистрировать"
+                Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Margin="5,15,5,15"  Command="{Binding AddRegistration}"/>
+
+
+    </Grid>
+</Window>

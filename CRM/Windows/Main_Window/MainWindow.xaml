@@ -1,0 +1,157 @@
+﻿<Window x:Class="CRM.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CRM"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid ShowGridLines="False">
+
+        <!--Настройки сетки-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+
+        </Grid.ColumnDefinitions>
+
+        <!--Левая плашка -->
+        <GroupBox x:Name="canvas_lent"  
+              Grid.RowSpan="2" Grid.Column="0"
+              Width="Auto" Height="Auto"
+              MinWidth="50"
+              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+
+            <Grid ShowGridLines="False" Grid.Column="0">
+                <!--Настройки сетки-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid x:Name="grid_back" ShowGridLines="False"  Background="#1e2248" Grid.Column="0" Grid.RowSpan="11">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                </Grid>
+
+                <!--Верхние иконки -->
+                <Grid x:Name="Grid_logo" Grid.Row="0" >
+                    <Image x:Name="imgW_logo" Margin="5,5,5,5"
+                     Grid.Row="0"
+                     Height="Auto" Width="Auto"
+                     HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/crm_white.png"
+                     />
+                </Grid>
+                <Grid x:Name="Grid_user" Grid.Row="2">
+                    <Label x:Name="lb_back_user" HorizontalAlignment="Right" Background="White" Opacity="0" />
+                    <Image x:Name="imgW_user" Margin="5,5,5,5"
+                           Grid.Row="2"
+                           Height="Auto" Width="Auto"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/user_white.png"  />
+
+                    <Image x:Name="imgB_user" Margin="5,5,5,5"
+                           Grid.Row="2"
+                           Height="Auto" Width="Auto"
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="Fill" Source="/Resource/Image/user_back.png" Opacity="0"/>
+
+
+
+                </Grid>
+                <Grid x:Name="Grid_comp" Grid.Row="3">
+                    <Label x:Name="lb_back_comp" HorizontalAlignment="Right" Background="White" Opacity="0" />
+                    <Image x:Name="imgW_comp" Margin="5,5,5,5"
+                         Grid.Row="3"
+                         Height="Auto" Width="Auto"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/comp_white.png"/>
+                    <Image x:Name="imgB_comp" Margin="5,5,5,5"
+                         Grid.Row="3"
+                         Height="Auto" Width="Auto"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/comp_back.png" Opacity="0"/>
+                </Grid>
+                <Grid x:Name="Grid_client" Grid.Row="4">
+                    <Label x:Name="lb_back_client" HorizontalAlignment="Right" Background="White" Opacity="0" />
+                    <Image x:Name="imgW_client" Margin="5,5,5,5"
+                         Grid.Row="3"
+                         Height="Auto" Width="Auto"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/client_white.png"/>
+                    <Image x:Name="imgB_client" Margin="5,5,5,5"
+                         Grid.Row="3"
+                         Height="Auto" Width="Auto"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/client_black.png"
+                         Opacity="0" />
+                </Grid>
+                <Grid x:Name="Grid_question"  Grid.Row="8">
+                    <Label x:Name="lb_back_question"  HorizontalAlignment="Right" Background="White" Opacity="0" />
+                    <Image x:Name="imgW_question" Margin="10,10,10,10"
+                         Grid.Row="9"
+                         Height="Auto" Width="Auto"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/question_white.png" />
+                    <Image x:Name="imgB_question" Margin="10,10,10,10"
+                         Grid.Row="9"
+                         Height="Auto" Width="Auto"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/question_back.png" Opacity="0"/>
+
+                </Grid>
+                <Grid x:Name="Grid_technical"  Grid.Row="9">
+                    <Label x:Name="lb_back_technical" HorizontalAlignment="Right" Background="White" Opacity="0" />
+                    <Image x:Name="imgW_technical" Margin="10,10,10,10"
+                         Grid.Row="10"
+                         Height="Auto" Width="Auto"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/tech_whithe.png" />
+                    <Image x:Name="imgB_technical" Margin="10,10,10,10"
+                         Grid.Row="10"
+                         Height="Auto" Width="Auto"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill"  Source="/Resource/Image/tech_back.png" Opacity="0" />
+                </Grid>
+                <Grid x:Name="Grid_exit"  Grid.Row="10">
+                    <Label x:Name="lb_back_exit" HorizontalAlignment="Right" Background="White" Opacity="0" />
+                    <Image x:Name="imgW_exit" Margin="10,10,10,10"
+                   Grid.Row="10"
+                   Height="Auto" Width="Auto"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/exit_white.png"/>
+                    <Image x:Name="imgB_exit" Margin="10,10,10,10"
+                   Grid.Row="10"
+                   Height="Auto" Width="Auto"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" Source="/Resource/Image/exit_black.png"
+                   Opacity="0"/>
+                </Grid>
+
+            </Grid>
+        </GroupBox>
+
+        <Frame x:Name="Frame_Main" NavigationUIVisibility="Hidden"
+             Grid.Column="1" Grid.ColumnSpan="3"
+             Grid.Row="0" Grid.RowSpan="2" Margin="10,10,10,10" Content="{Binding CurrentPage}"
+             />
+    </Grid>
+</Window>
