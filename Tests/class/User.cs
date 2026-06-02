@@ -5,13 +5,13 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRM
+namespace Tests
 {
     public class User:Employer
     {
         public string Login { get; set; }
         public String Password { get; set; }
-        public int PostName { get;  set; }
+        public int Post { get;  set; }
 
         public User()
         {

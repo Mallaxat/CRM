@@ -32,7 +32,7 @@ namespace CRM
             if(user== null) return false;
             ListUsers.Add(user);
             //FileService.Instance.Save(ListUsers,FilePath.Users);
-            SqlService.Instance.AddUser(user);
+            SqlService.Instance.AddBD(Procedure.ADD_NEW_USER, user);
             return ListUsers.Contains(user);
         }
         //Логирование 
@@ -41,7 +41,7 @@ namespace CRM
             if(ListUsers==null)return false;
             foreach(var i in ListUsers)
             {
-                if(i.Login==user.Login && SecureStringCheck(i.Password,user.Password) ) return true;
+                if(i.Login==user.Login && i.Password== user.Password ) return true;
             }
             return false;
         }
@@ -59,11 +59,11 @@ namespace CRM
         {
             foreach (var i in ListUsers)
             {
-                if (i.Login == user.Login && SecureStringCheck(i.Password, user.Password)) return i;
+                if (i.Login == user.Login && i.Password == user.Password) return i;
             }
             return null;
         }
-        //Метод,для проверки совпадения пароля
+        //Метод,для проверки совпадения пароля его пока оставлю
         public bool SecureStringCheck(SecureString first, SecureString two)
         {
             if (first == null || two == null) return false;

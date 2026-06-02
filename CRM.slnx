@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="CRM/CRM.csproj" Id="6819030d-e028-4274-a019-f6bc0d410e68" />
+  <Project Path="Tests/Tests.csproj" Id="771c0d9e-0584-445a-8bb5-d58c7a17b1db" />
 </Solution>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -84,12 +85,14 @@ namespace CRM
         }
         //Команды
         public ICommand AddRegistration { get; }
+        
         //Интерфейс
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged([CallerMemberName] string propertyname = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
         }
+       
         //Конструктор
         public VM_Registration(MessageeServise serviseMessege, WindowService serviseWindow)
         {
@@ -104,7 +107,29 @@ namespace CRM
             );
 
         }
+
         //Методы
+        //ЭТО НЕ ПРАВИЛЬНО НАДО БУДЕТ ЧТО_ТО ПРИДУМАТЬ ЭТО КОСТЫЛЬ!
+        private string GetPassword(SecureString password)
+        {
+            string pas = String.Empty;
+            IntPtr intPassword = Marshal.SecureStringToBSTR(password);
+
+            try
+            {
+                for (int i = 0; i < password.Length; i++)
+                {
+                    char firstChar = (char)Marshal.ReadInt16(intPassword, i * 2);
+                    pas += firstChar.ToString();
+                }
+                return pas;
+            }
+            finally
+            {
+                if (intPassword != IntPtr.Zero)
+                    Marshal.ZeroFreeBSTR(intPassword);
+            }
+        }
         public bool CanRegistration()
         {
             if ( !String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(FName) && !String.IsNullOrEmpty(Patronymic)
@@ -121,12 +146,12 @@ namespace CRM
             }
             User user = new User
             {
-                Name = this.Name,
-                FName = this.FName,
-                Patronymic = this.Patronymic,
+                FirstName = this.Name,
+                LastName = this.FName,
+                MiddleName = this.Patronymic,
                 Login = this.Login,
-                Password = this.Password,
-                Post = CheckPost()
+                Password = GetPassword(this.Password),
+                PostName = CheckPost()
             };
             if (LoginService.Instance.IsLogin(user))
             {

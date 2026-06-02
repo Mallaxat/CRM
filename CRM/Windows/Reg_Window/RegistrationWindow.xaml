@@ -123,7 +123,7 @@ Grid.ColumnSpan="3">
                 Grid.Column="2" Grid.Row="6" 
                 Grid.ColumnSpan="3" 
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                Margin="5,15,10,15" ItemsSource="{Binding Posts}" SelectedItem="{Binding SelectPosts}"/>
+                Margin="5,15,10,15" ItemsSource="{Binding Posts}" SelectedItem="{Binding SelectPosts}" SelectedIndex="1"/>
         
         <Button x:Name="bt_enter" Content="Зарегистрировать"
                 Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3"

@@ -37,8 +37,8 @@ namespace CRM
 
             }
         }
-        private SecureString password;
-        public SecureString Password
+        private string password;
+        public string Password
         {
             get => password;
             set

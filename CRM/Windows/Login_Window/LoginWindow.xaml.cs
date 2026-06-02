@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -38,11 +40,35 @@ namespace CRM
             DataContext = _vm;
 
         }
-
+        
         private void bt_Login_Click(object sender, RoutedEventArgs e)
         {
-            _vm.Password = tb_Password.SecurePassword.Copy();
+            _vm.Password = GetPassword(tb_Password.SecurePassword.Copy());
             tb_Password.Clear();
         }
+
+        //ЭТО НЕ ПРАВИЛЬНО НАДО БУДЕТ ЧТО_ТО ПРИДУМАТЬ ЭТО КОСТЫЛЬ!
+        private string GetPassword(SecureString password)
+        {
+            string pas = String.Empty;
+            IntPtr intPassword = Marshal.SecureStringToBSTR(password);
+
+            try
+            {
+                for (int i = 0; i < password.Length; i++)
+                {
+                    char firstChar = (char)Marshal.ReadInt16(intPassword, i * 2);
+                    pas += firstChar.ToString();
+                }
+                return pas;
+            }
+            finally
+            {
+                if (intPassword != IntPtr.Zero)
+                    Marshal.ZeroFreeBSTR(intPassword);
+            }
+        }
+
+
     }
 }
