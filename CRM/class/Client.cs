@@ -8,13 +8,13 @@ namespace CRM
 {
    public class Client
     {
-        public string Name { get; set; }
+        public string FirstName { get; set; }
 
-        public string FName { get; set; }
+        public string LastName { get; set; }
 
-        public string Patronymic { get; set; }
+        public string MiddleName { get; set; }
 
-        public string Phone {  get; set; }
+        public string PhoneNumber {  get; set; }
 
     }
 }

@@ -28,7 +28,8 @@ namespace CRM
         {
             _setting = settings;
             //Тут юзер пустой почти
-            SqlService.Instance.ReadClients( ListClients, _setting.user);
+            //SqlService.Instance.ReadClients( ListClients, _setting.user);
+            ListClients=SqlService.Instance.ReadDB<Client>(DBProcedure.READ_ONE_TABLE, DBNamesTable.Client);
         }
 
     }

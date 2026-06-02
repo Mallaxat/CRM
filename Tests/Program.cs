@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.Remoting.Contexts;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using static Tests.Program;
 
 namespace Tests
 {
@@ -21,46 +24,23 @@ namespace Tests
             ADD_NEW_USER,
 
         }
+        public enum DBProcedure
+        {
+            ADD_NEW_USER,
+            READ_ONE_TABLE,
+            GET_TABLE_HEADERS
+        }
+        public enum DBNamesTable
+        {
+            Client,
+            Post,
+            Employer,
+            User
+        }
         //СТАТИКИ УБРАТЬ
 
-        public static bool SetPatametr<T>(T user, string procedureParametr,string value)
-        {
-            procedureParametr =  procedureParametr.Replace("@", "");
-
-            Type type = typeof(T);
-
-            //Получаем свойство класса
-            var property= type.GetProperty(procedureParametr);
-            if(property != null && property.CanWrite)
-            {
-                property.SetValue(user, value);
-                return true;
-            }
-
-            return false;
-
-
-
-        }
-        public static string GetPatametr<T>(T user, string procedureParametr )
-        {
-            string option = "get_";
-            procedureParametr = $"{option}{procedureParametr.Replace("@", "")}";
-
-            Type type = typeof(T);
-            //получить информацию о публичных названиях моего класса
-            foreach (MemberInfo member in type.GetMembers())
-            {
-
-                if (member.Name.ToString().Contains(procedureParametr))
-                    return member.Name.ToString();
-
-            }
-            return null;
-
-        }
-
-        public static List<string> GetPatametrs(Procedure procedureName)
+        //Метод для полечения параметра процедуры
+        public static List<string> GetPatametrs(DBProcedure procedureName)
         {
             string procedure = "GET_PROCEDURE_PARAMETRS";
             //Если процедура равна процедуре возврата параметров
@@ -90,7 +70,7 @@ namespace Tests
 
         }
 
-
+        //Метод соединяющий параметр процедуры и значение для этой процедуры
         public static Dictionary<string,string> JoinParametrs <T>(T classObj,List<string> procParametr)
         {
             Dictionary<string, string> result= new Dictionary<string,string>();
@@ -106,7 +86,6 @@ namespace Tests
                 //j=propertyinfo
                 foreach(var proInfo in typeClass.GetProperties())
                 {
-  
                     if(proInfo.Name==clearProcParametr)
                     {
                         object value = proInfo.GetValue(classObj);
@@ -119,6 +98,98 @@ namespace Tests
         }
 
 
+        private static List<string> GetTableHeaders(DBNamesTable tableName)
+        {
+            SqlConnection con = new SqlConnection(connect);
+            try
+            {
+                DBProcedure procedure = DBProcedure.GET_TABLE_HEADERS;
+
+                List<string> patametrs = GetPatametrs(procedure);
+
+                using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
+                {
+                    con.Open();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    foreach (var i in patametrs)
+                    {
+                        cmd.Parameters.AddWithValue(i.ToString(), tableName.ToString());
+                    }
+                    var listHeaderString = cmd.ExecuteScalar();
+                    List<string> result = new List<string>();
+                    result.AddRange(listHeaderString.ToString().Split(','));
+                    return result;
+                }
+            }
+            catch (Exception ex) { }
+            finally
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+            }
+            return null;
+        }
+
+        public static ObservableCollection<T> ReadDB<T>(DBProcedure procedure, DBNamesTable tableName) where T : new()
+        {
+            //Тут база данных мне возвращает массив, с разными полями 
+            //Процедура она принимает как значение название таблицы
+            SqlConnection con=new SqlConnection(connect);
+            ObservableCollection<T> reslt=new ObservableCollection<T>();
+
+            using (SqlCommand cmd=new SqlCommand(procedure.ToString(), con))
+            {          
+                //Параметры, которые данная процедура принимает
+                List<string> parametrs = GetPatametrs(procedure);
+
+                //Заголовки этой таблицы
+                List<string> tableHead = GetTableHeaders(tableName);
+
+
+                Type typeClass=typeof(T);
+                //Свойства класса
+                List<string> classProperty=new List<string>();
+                foreach (var i in typeClass.GetProperties())             
+                {
+                    classProperty.Add(i.Name);
+                }
+
+
+
+                con.Open();
+                cmd.CommandType= CommandType.StoredProcedure;
+
+                if (parametrs.Count != 1) return null;
+
+                //Заполнение параметров
+                cmd.Parameters.AddWithValue(parametrs[0].ToString(), tableName.ToString());
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    T classObj = new T();
+
+                    for (int i = 0; i <= classProperty.Count-1; i++)
+                    {
+                        for(int j=0;j<= tableHead.Count-1;j++)
+                        {
+                            if (classProperty[i] == tableHead[j])
+                            {
+                                var pr = typeClass.GetProperty(classProperty[i]);
+                                pr.SetValue(classObj, reader[j]);
+                                break;
+                            }
+                            
+                        }
+                    }
+                    reslt.Add(classObj);
+                }
+
+            }
+
+            return reslt;
+        }
+
 
 
         static void Main(string[] args)
@@ -126,26 +197,41 @@ namespace Tests
 
             //Тест метода возвращения параметров
             #region
-            List<string> ProcedureParametrs=GetPatametrs(Procedure.ADD_NEW_USER);
+            List<string> ProcedureParametrs=GetPatametrs(DBProcedure.ADD_NEW_USER);
             #endregion
 
             //Тест метода для передачи параметров из класса в процедуру
-            #region
+            
             User user = new User{ FirstName="Имя",
                                    LastName="Фамилия",
                                    MiddleName="Отчество",
                                    Login="Логин",
                                    Password="111"};
 
-           
 
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            result=JoinParametrs(user, ProcedureParametrs);
+            /*
+                        Dictionary<string, string> result = new Dictionary<string, string>();
+                        result=JoinParametrs(user, ProcedureParametrs);
 
+                        Console.WriteLine();
+                        #endregion
+            */
+
+            #region
+            List<string> tablehander = GetTableHeaders(DBNamesTable.User);
             Console.WriteLine();
+
+
+            ObservableCollection<Client> clients = new ObservableCollection<Client>();
+            clients= ReadDB<Client>(DBProcedure.READ_ONE_TABLE, DBNamesTable.Client);
+
+            ObservableCollection<Employer> users = new ObservableCollection<Employer>();
+            users = ReadDB<Employer>(DBProcedure.READ_ONE_TABLE, DBNamesTable.Employer);
+            foreach(var i in users)
+            {
+                Console.WriteLine(i.FirstName.ToString());
+            }
             #endregion
-
-
         }
     }
 }

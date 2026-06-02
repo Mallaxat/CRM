@@ -15,10 +15,18 @@ using System.Windows.Input;
 
 namespace CRM
 {
-    public enum Procedure
+    public enum DBProcedure
     {
         ADD_NEW_USER,
-
+        READ_ONE_TABLE,
+        GET_TABLE_HEADERS
+    }
+    public enum DBNamesTable
+    {
+        Client,
+        Post,
+        Employer,
+        User
     }
 
     class SqlService
@@ -33,38 +41,7 @@ namespace CRM
         {
             Instance = this;
         }
-        //МЕТОДЫ СЕРВИСЫ
-
-        private string connect = ConfigurationManager.ConnectionStrings["CRM"].ConnectionString;
-        //Метод для полечения параметра процедуры
-        private List<string> GetPatametrs(Procedure procedureName)
-        {
-            string procedure = "GET_PROCEDURE_PARAMETRS";
-            //Если процедура равна процедуре возврата параметров
-            if (procedureName.ToString() == procedure) return null;
-
-            List<string> result = new List<string>();
-            using(SqlConnection conn = new SqlConnection(connect))
-            {
-                //Шапка созадния команды-процедуры
-                conn.Open();
-                SqlCommand cmd=new SqlCommand(procedure, conn);
-                cmd.CommandType=CommandType.StoredProcedure;
-                
-                //Добавляем процедуру-аргумент в качестве параметра
-                cmd.Parameters.AddWithValue("@ProcedureName",procedureName.ToString());
-
-                //Считываем значения
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while(reader.Read())
-                {
-                    result.Add(reader["ParameterName"].ToString());
-                }
-                if(result.Count>0) return result;
-                else return null;
-            }
-        }
+        //КОСТЫЛЬ
         public static SecureString ToSecureString(string value)
         {
             if (value == null)
@@ -100,10 +77,78 @@ namespace CRM
             }
         }
 
+
+        //МЕТОДЫ СЕРВИСЫ
+
+        private string connect = ConfigurationManager.ConnectionStrings["CRM"].ConnectionString;
+        
+        //Метод для полечения параметра процедуры
+        private List<string> GetPatametrs(DBProcedure procedureName)
+        {
+            string procedure = "GET_PROCEDURE_PARAMETRS";
+            //Если процедура равна процедуре возврата параметров
+            if (procedureName.ToString() == procedure) return null;
+
+            List<string> result = new List<string>();
+            using(SqlConnection conn = new SqlConnection(connect))
+            {
+                //Шапка созадния команды-процедуры
+                conn.Open();
+                SqlCommand cmd=new SqlCommand(procedure, conn);
+                cmd.CommandType=CommandType.StoredProcedure;
+                
+                //Добавляем процедуру-аргумент в качестве параметра
+                cmd.Parameters.AddWithValue("@ProcedureName",procedureName.ToString());
+
+                //Считываем значения
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while(reader.Read())
+                {
+                    result.Add(reader["ParameterName"].ToString());
+                }
+                if(result.Count>0) return result;
+                else return null;
+            }
+        }
+        
+        //Метод, для получения названия всех сущностей таблицы
+        private  List<string> GetTableHeaders(DBNamesTable tableName)
+        {
+            SqlConnection con = new SqlConnection(connect);
+            try
+            {
+                DBProcedure procedure = DBProcedure.GET_TABLE_HEADERS;
+
+                List<string> patametrs = GetPatametrs(procedure);
+
+                using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
+                {
+                    con.Open();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    foreach (var i in patametrs)
+                    {
+                        cmd.Parameters.AddWithValue(i.ToString(), tableName.ToString());
+                    }
+                    var listHeaderString = cmd.ExecuteScalar();
+                    List<string> result = new List<string>();
+                    result.AddRange(listHeaderString.ToString().Split(','));
+                    return result;
+                }
+            }
+            catch (Exception ex) { }
+            finally
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+            }
+            return null;
+        }
+
+
         //ПУБЛИЧНЫЕ МЕТОДЫ 
 
         //Метод соединяющий параметр процедуры и значение для этой процедуры
-        public Dictionary<string, string> JoinParametrs<T>(T classObj, Procedure procedureName)
+        public Dictionary<string, string> JoinParametrs<T>(T classObj, DBProcedure procedureName)
         {
             if(procedureParametrs.Count!=0)procedureParametrs.Clear();
 
@@ -135,7 +180,7 @@ namespace CRM
         }
 
         //Универсальный метод
-        public void AddBD<T>(Procedure procedure,T classObj)
+        public void AddDB<T>(DBProcedure procedure,T classObj)
         {
             SqlConnection con = new SqlConnection(connect);
             try
@@ -169,6 +214,67 @@ namespace CRM
             }
 
         }
+
+
+        public ObservableCollection<T> ReadDB<T>(DBProcedure procedure, DBNamesTable tableName) where T : new()
+        {
+            //Тут база данных мне возвращает массив, с разными полями 
+            //Процедура она принимает как значение название таблицы
+            SqlConnection con = new SqlConnection(connect);
+            ObservableCollection<T> reslt = new ObservableCollection<T>();
+
+            using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
+            {
+                //Параметры, которые данная процедура принимает
+                List<string> parametrs = GetPatametrs(procedure);
+
+                //Заголовки этой таблицы
+                List<string> tableHead = GetTableHeaders(tableName);
+
+
+                Type typeClass = typeof(T);
+                //Свойства класса
+                List<string> classProperty = new List<string>();
+                foreach (var i in typeClass.GetProperties())
+                {
+                    classProperty.Add(i.Name);
+                }
+
+                con.Open();
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (parametrs.Count != 1) return null;
+
+                //Заполнение параметров
+                cmd.Parameters.AddWithValue(parametrs[0].ToString(), tableName.ToString());
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    T classObj = new T();
+
+                    for (int i = 0; i <= classProperty.Count - 1; i++)
+                    {
+                        for (int j = 0; j <= tableHead.Count - 1; j++)
+                        {
+                            if (classProperty[i] == tableHead[j])
+                            {
+                                var pr = typeClass.GetProperty(classProperty[i]);
+                                pr.SetValue(classObj, reader[j]);
+                                break;
+                            }
+
+                        }
+                    }
+                    reslt.Add(classObj);
+                }
+
+            }
+
+            return reslt;
+        }
+
 
         public void ReadUser( ObservableCollection<User> collection)
         {
@@ -216,7 +322,7 @@ namespace CRM
 
         }
 
-        public void ReadClients(ObservableCollection<Client> collection,User user)
+/*        public void ReadClients(ObservableCollection<Client> collection,User user)
         {
             string command = $"DECLARE @Login NVARCHAR(100) = N'{user.Login.ToString()}';" +
                 "SELECT * FROM Client " +
@@ -242,15 +348,15 @@ namespace CRM
 
                     collection.Add(new Client
                     {
-                        Name = name.ToString(),
-                        Patronymic = secondName.ToString(),
-                        FName = thirdName.ToString(),
-                        Phone = phone.ToString(),
+                        FirstName = name.ToString(),
+                        MiddleName = secondName.ToString(),
+                        LastName = thirdName.ToString(),
+                        PhoneNumber = phone.ToString(),
                     });
                 }
             }
 
-        }
+        }*/
 
 
 

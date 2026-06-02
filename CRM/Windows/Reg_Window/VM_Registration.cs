@@ -100,6 +100,7 @@ namespace CRM
             this.serviseWindow = serviseWindow;
 
             SqlService.Instance.ReadPost(Posts);
+        
 
              AddRegistration = new RelayCommand(  
                 _ => Registration(),

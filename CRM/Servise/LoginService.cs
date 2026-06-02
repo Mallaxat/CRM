@@ -23,7 +23,9 @@ namespace CRM
        private LoginService()        
         {
             Instance = this;
+            //Тут пока проблемки, нужно юзер и емплоер джоинить
             SqlService.Instance.ReadUser(ListUsers);
+         
         }
     
         //Регистрация
@@ -31,8 +33,7 @@ namespace CRM
         {
             if(user== null) return false;
             ListUsers.Add(user);
-            //FileService.Instance.Save(ListUsers,FilePath.Users);
-            SqlService.Instance.AddBD(Procedure.ADD_NEW_USER, user);
+            SqlService.Instance.AddDB(DBProcedure.ADD_NEW_USER, user); 
             return ListUsers.Contains(user);
         }
         //Логирование 
