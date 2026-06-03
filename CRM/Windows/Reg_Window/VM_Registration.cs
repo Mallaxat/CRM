@@ -99,8 +99,7 @@ namespace CRM
             this.serviseMessege = serviseMessege;
             this.serviseWindow = serviseWindow;
 
-            SqlService.Instance.ReadPost(Posts);
-        
+            Posts = SqlService.Instance.ReadDBColumn(DBProcedure.READ_COLUMN_TABLE, DBNamesTable.Post, "PostName");
 
              AddRegistration = new RelayCommand(  
                 _ => Registration(),

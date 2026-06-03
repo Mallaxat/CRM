@@ -20,6 +20,7 @@ namespace CRM
         ADD_NEW_USER,
         READ_ONE_TABLE,
         READ_TWO_TABLE,
+        READ_COLUMN_TABLE,
         GET_TABLE_HEADERS
     }
     public enum DBNamesTable
@@ -180,7 +181,7 @@ namespace CRM
             return result;
         }
 
-        //Универсальный метод
+        //Метод для добавления новых данных в БД
         public void AddDB<T>(DBProcedure procedure,T classObj)
         {
             SqlConnection con = new SqlConnection(connect);
@@ -216,14 +217,13 @@ namespace CRM
 
         }
 
-
+        //Метод для считывания данных из БЖ
         public ObservableCollection<T> ReadDB<T>(DBProcedure procedure, DBNamesTable tableName) where T : new()
         {
-            //Тут база данных мне возвращает массив, с разными полями 
             //Процедура она принимает как значение название таблицы
             SqlConnection con = new SqlConnection(connect);
             ObservableCollection<T> reslt = new ObservableCollection<T>();
-
+            try { 
             using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
             {
                 //Параметры, которые данная процедура принимает
@@ -274,132 +274,156 @@ namespace CRM
             }
 
             return reslt;
-        }
-
-        public  ObservableCollection<T> ReadDB<T, K>(DBProcedure procedure, DBNamesTable tableName, DBNamesTable tableName2)
-       where T : new()
-        {
-            //Тут база данных мне возвращает массив, с разными полями 
-            //Процедура она принимает как значение название таблицы
-            SqlConnection con = new SqlConnection(connect);
-            ObservableCollection<T> reslt = new ObservableCollection<T>();
-
-            using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
-            {
-                //Параметры, которые данная процедура принимает
-                List<string> parametrs = GetPatametrs(procedure);
-
-                //Заголовки этой таблицы
-                List<string> tableHead = new List<string>();
-
-
-                Type typeClass = typeof(T);
-                //Свойства класса
-                List<string> classProperty = new List<string>();
-                foreach (var i in typeClass.GetProperties())
-                {
-                    classProperty.Add(i.Name);
-                }
-                string[] classPropertyBasa = new string[classProperty.Count];
-                classProperty.CopyTo(classPropertyBasa);
-
-
-                con.Open();
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                if (parametrs.Count != 2) return null;
-
-                List<string> tablNames = new List<string>();
-                tablNames.Add(tableName.ToString());
-                tablNames.Add(tableName2.ToString());
-
-                for (int i = 0; i < parametrs.Count; i++)
-                {
-                    //Заполнение параметров
-                    cmd.Parameters.AddWithValue(parametrs[i].ToString(), tablNames[i].ToString());
-                }
-
-
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    T classObj = new T();
-
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        string tableheader = reader.GetName(i).ToString();
-                        for (int j = 0; j < classProperty.Count; j++)
-                        {
-                            if (!classProperty.Contains(tableheader)) break;
-                            if (classProperty[j] == reader.GetName(i).ToString())
-                            {
-                                var pr = typeClass.GetProperty(classProperty[j]);
-                                pr.SetValue(classObj, reader[i].ToString());
-                                classProperty.Remove(classProperty[j]);
-                                break;
-                            }
-                        }
-
-                    }
-                    classProperty.Clear();
-                    classProperty.AddRange(classPropertyBasa);
-                    reslt.Add(classObj);
-                }
-
             }
-
+            catch (Exception ex)
+            {
+                ex.ToString();
+            }
+            finally
+            {
+                if(con.State==ConnectionState.Open) con.Close(); 
+            }
             return reslt;
         }
 
-/*        public void ReadUser( ObservableCollection<User> collection)
+        public ObservableCollection<T> ReadDB<T, K>(DBProcedure procedure, DBNamesTable tableName, DBNamesTable tableName2)
+       where T : new()
         {
-            string command = "SELECT * FROM [User] LEFT JOIN Employer ON Employer.UserId = [User].UserId;";
-            using (SqlConnection con = new SqlConnection(connect))
+            //Процедура она принимает как значение название таблицы
+            SqlConnection con = new SqlConnection(connect);
+
+            ObservableCollection<T> reslt = new ObservableCollection<T>();
+            try
             {
-                con.Open();
-                SqlCommand cdm = new SqlCommand(command, con);
-                SqlDataReader reader = cdm.ExecuteReader();
-
-          
-
-
-                while (reader.Read())
+                using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
                 {
-                    var name = reader["FirstName"];
-                    var secondName = reader["MiddleName"];
-                    var thirdName = reader["LastName"];
-                    var login = reader["Login"];
-                    var password = reader["Password"];
-                    collection.Add(new User
+                    //Параметры, которые данная процедура принимает
+                    List<string> parametrs = GetPatametrs(procedure);
+
+                    //Заголовки этой таблицы
+                    List<string> tableHead = new List<string>();
+
+
+                    Type typeClass = typeof(T);
+                    //Свойства класса
+                    List<string> classProperty = new List<string>();
+                    foreach (var i in typeClass.GetProperties())
                     {
-                        FirstName = name.ToString(),
-                        MiddleName = secondName.ToString(),
-                        LastName = thirdName.ToString(),
-                        Login = login.ToString(),
-                        Password = password.ToString(),
-                    });
-                }
-            }
+                        classProperty.Add(i.Name);
+                    }
+                    string[] classPropertyBasa = new string[classProperty.Count];
+                    classProperty.CopyTo(classPropertyBasa);
 
-        }*/
-        public void ReadPost(List<string> collection)
-        {
-            string command = "SELECT * FROM Post ";
-            using (SqlConnection con = new SqlConnection(connect))
+
+                    con.Open();
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (parametrs.Count != 2) return null;
+
+                    List<string> tablNames = new List<string>();
+                    tablNames.Add(tableName.ToString());
+                    tablNames.Add(tableName2.ToString());
+
+                    for (int i = 0; i < parametrs.Count; i++)
+                    {
+                        //Заполнение параметров
+                        cmd.Parameters.AddWithValue(parametrs[i].ToString(), tablNames[i].ToString());
+                    }
+
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        T classObj = new T();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            string tableheader = reader.GetName(i).ToString();
+                            for (int j = 0; j < classProperty.Count; j++)
+                            {
+                                if (!classProperty.Contains(tableheader)) break;
+                                if (classProperty[j] == reader.GetName(i).ToString())
+                                {
+                                    var pr = typeClass.GetProperty(classProperty[j]);
+                                    pr.SetValue(classObj, reader[i].ToString());
+                                    classProperty.Remove(classProperty[j]);
+                                    break;
+                                }
+                            }
+
+                        }
+                        classProperty.Clear();
+                        classProperty.AddRange(classPropertyBasa);
+                        reslt.Add(classObj);
+                    }
+
+                }
+                return reslt;
+            }
+            catch (Exception ex)
             {
-                con.Open();
-                SqlCommand cdm = new SqlCommand(command, con);
-                SqlDataReader reader = cdm.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    var post = reader["PostName"];
-                    collection.Add(post.ToString());
-                }
+                ex.ToString();
             }
+            finally
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+            }
+            return reslt;
+
 
         }
+
+        //Метод для считывания 1 колонки таблицы
+        public List<string> ReadDBColumn(DBProcedure procedure, DBNamesTable tableName, string header)
+        {
+            SqlConnection con = new SqlConnection(connect);
+            List<string> result = new List<string>();
+            try
+            {
+                using (SqlCommand cdm = new SqlCommand(procedure.ToString(), con))
+                {
+                    cdm.CommandType = CommandType.StoredProcedure;
+
+                    con.Open();
+
+                    //Все заголовки этой таблицы
+                    List<string> headerTable = GetTableHeaders(tableName);
+                    if (!headerTable.Contains(header))
+                    {
+                        throw new Exception("ReadDBColumn SQL header is not find");
+                    }
+
+                    List<string> parametrs = GetPatametrs(procedure);
+                    if (parametrs.Count > 1)
+                    {
+                        throw new Exception($"ReadDBColumn SQL procedure {procedure.ToString()} has {parametrs.Count} atrebut");
+                    }
+
+                    cdm.Parameters.AddWithValue(parametrs[0], tableName.ToString());
+
+                    SqlDataReader reader = cdm.ExecuteReader();
+
+
+                    while (reader.Read())
+                    {
+                        result.Add(reader[header].ToString());
+                    }
+
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+            }
+            finally
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+            }
+            return result;
+        }
+
 
     }
 }
