@@ -81,10 +81,9 @@
                     <TextBox x:Name="tb_Name"  Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"
                              Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="1"
                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                            Margin="5,5,5,5" TextWrapping="WrapWithOverflow" 
+                             Margin="5,5,5,5" TextWrapping="WrapWithOverflow" 
                              MinWidth="160" 
-                             Width="Auto" Height="Auto" FontSize="12" TextAlignment="Left" 
-                             />
+                             Width="Auto" Height="Auto" FontSize="12" TextAlignment="Left" />
                 </Border>
                 <!--#endregion-->
 

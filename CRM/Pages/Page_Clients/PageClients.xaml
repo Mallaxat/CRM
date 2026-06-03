@@ -32,22 +32,21 @@
              >
             <DataGrid.Columns >
                 <DataGridTextColumn x:Name="DG_Name" Header="Имя"
-                                    Binding="{Binding Name}" 
+                                    Binding="{Binding FirstName}" 
                                     Width="*"/>
                 <DataGridTextColumn x:Name="DG_Patronymic" Header="Отчество"
-                                    Binding="{Binding Patronymic}"
+                                    Binding="{Binding MiddleName}"
                                     Width="*"/>
                 <DataGridTextColumn x:Name="DG_FName" Header="Фамилия"
-                                    Binding="{Binding FName}"
+                                    Binding="{Binding LastName}"
                                     Width="*"/>
                 <DataGridTextColumn x:Name="DG_Phone" Header="Телефон"
-                                    Binding="{Binding Phone}"
+                                    Binding="{Binding PhoneNumber}"
                                     Width="*"/>
             </DataGrid.Columns>
 
 
         </DataGrid>
-        <Label Grid.Column="1" Content="Label" HorizontalAlignment="Left" Margin="100,0,0,0" Grid.Row="1" VerticalAlignment="Center" Background="#FF800909" Grid.ColumnSpan="3" Width="487"/>
 
 
     </Grid>

@@ -21,6 +21,7 @@ namespace CRM
         READ_ONE_TABLE,
         READ_TWO_TABLE,
         READ_COLUMN_TABLE,
+        READ_ONE_TABLE_CONDITION,
         GET_TABLE_HEADERS
     }
     public enum DBNamesTable
@@ -285,7 +286,77 @@ namespace CRM
             }
             return reslt;
         }
+        //Чтение по определенному юзеру
+        public ObservableCollection<T> ReadDB<T>(DBProcedure procedure, DBNamesTable tableName,string condition) where T : new()
+        {
+            //Процедура она принимает как значение название таблицы
+            SqlConnection con = new SqlConnection(connect);
+            ObservableCollection<T> reslt = new ObservableCollection<T>();
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
+                {
+                    //Параметры, которые данная процедура принимает
+                    List<string> parametrs = GetPatametrs(procedure);
 
+                    //Заголовки этой таблицы
+                    List<string> tableHead = GetTableHeaders(tableName);
+
+
+                    Type typeClass = typeof(T);
+                    //Свойства класса
+                    List<string> classProperty = new List<string>();
+                    foreach (var i in typeClass.GetProperties())
+                    {
+                        classProperty.Add(i.Name);
+                    }
+
+                    con.Open();
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (parametrs.Count != 2) return null;
+
+
+                    //Заполнение параметров
+                    cmd.Parameters.AddWithValue(parametrs[0].ToString(), tableName.ToString());
+                    cmd.Parameters.AddWithValue(parametrs[1].ToString(), condition);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        T classObj = new T();
+
+                        for (int i = 0; i <= classProperty.Count - 1; i++)
+                        {
+                            for (int j = 0; j <= tableHead.Count - 1; j++)
+                            {
+                                if (classProperty[i] == tableHead[j])
+                                {
+                                    var pr = typeClass.GetProperty(classProperty[i]);
+                                    pr.SetValue(classObj, reader[j]);
+                                    break;
+                                }
+
+                            }
+                        }
+                        reslt.Add(classObj);
+                    }
+
+                }
+
+                return reslt;
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+            }
+            finally
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+            }
+            return reslt;
+        }
         public ObservableCollection<T> ReadDB<T, K>(DBProcedure procedure, DBNamesTable tableName, DBNamesTable tableName2)
        where T : new()
         {

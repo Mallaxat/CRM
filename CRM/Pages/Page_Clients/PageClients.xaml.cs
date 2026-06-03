@@ -20,12 +20,10 @@ namespace CRM
     /// </summary>
     public partial class PageClients : Page
     {
-        VM_PageClients _vm;
         public PageClients(VM_PageClients vm)
         {
             InitializeComponent();
-            _vm = vm;
-            DataContext = _vm;
+            DataContext = vm;
         }
     }
 }
