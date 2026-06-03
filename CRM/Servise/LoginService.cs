@@ -24,8 +24,8 @@ namespace CRM
         {
             Instance = this;
             //Тут пока проблемки, нужно юзер и емплоер джоинить
-            SqlService.Instance.ReadUser(ListUsers);
-         
+            // SqlService.Instance.ReadUser(ListUsers);
+            ListUsers = SqlService.Instance.ReadDB<User, Employer>(DBProcedure.READ_TWO_TABLE, DBNamesTable.User, DBNamesTable.Employer);
         }
     
         //Регистрация

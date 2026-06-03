@@ -28,6 +28,7 @@ namespace Tests
         {
             ADD_NEW_USER,
             READ_ONE_TABLE,
+            READ_TWO_TABLE,
             GET_TABLE_HEADERS
         }
         public enum DBNamesTable
@@ -191,6 +192,84 @@ namespace Tests
         }
 
 
+        public static ObservableCollection<T> ReadDB<T, K>(DBProcedure procedure, DBNamesTable tableName, DBNamesTable tableName2)
+            where T : new()
+        {
+            //Тут база данных мне возвращает массив, с разными полями 
+            //Процедура она принимает как значение название таблицы
+            SqlConnection con = new SqlConnection(connect);
+            ObservableCollection<T> reslt = new ObservableCollection<T>();
+
+            using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
+            {
+                //Параметры, которые данная процедура принимает
+                List<string> parametrs = GetPatametrs(procedure);
+
+                //Заголовки этой таблицы
+                List<string> tableHead = new List<string>();
+
+
+                Type typeClass = typeof(T);
+                //Свойства класса
+                List<string> classProperty = new List<string>();
+                foreach (var i in typeClass.GetProperties())
+                {
+                    classProperty.Add(i.Name);
+                }
+                string [] classPropertyBasa = new string [classProperty.Count];
+                classProperty.CopyTo(classPropertyBasa);
+
+
+                con.Open();
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (parametrs.Count != 2) return null;
+
+                List<string> tablNames = new List<string>();
+                tablNames.Add(tableName.ToString());
+                tablNames.Add(tableName2.ToString());
+
+                for(int i=0;i<parametrs.Count;i++)
+                {
+                    //Заполнение параметров
+                    cmd.Parameters.AddWithValue(parametrs[i].ToString(), tablNames[i].ToString());
+                }
+
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                
+                while (reader.Read())
+                {
+                    T classObj = new T();
+                   
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        string tableheader = reader.GetName(i).ToString();
+                        for(int j=0; j < classProperty.Count; j++)
+                        {
+                            if (!classProperty.Contains(tableheader)) break;
+                            if (classProperty[j] == reader.GetName(i).ToString())
+                            {
+                                var pr = typeClass.GetProperty(classProperty[j]);
+                                pr.SetValue(classObj, reader[i]);
+                                classProperty.Remove(classProperty[j]);
+                                break;
+                            }
+                        }
+
+                       
+                    }
+                    classProperty.Clear();
+                    classProperty.AddRange(classPropertyBasa);
+                    reslt.Add(classObj);
+                }
+
+            }
+
+            return reslt;
+        }
+
+
 
         static void Main(string[] args)
         {
@@ -222,14 +301,22 @@ namespace Tests
             Console.WriteLine();
 
 
-            ObservableCollection<Client> clients = new ObservableCollection<Client>();
-            clients= ReadDB<Client>(DBProcedure.READ_ONE_TABLE, DBNamesTable.Client);
+            //ObservableCollection<Client> clients = new ObservableCollection<Client>();
+            //clients= ReadDB<Client>(DBProcedure.READ_ONE_TABLE, DBNamesTable.Client);
 
-            ObservableCollection<Employer> users = new ObservableCollection<Employer>();
-            users = ReadDB<Employer>(DBProcedure.READ_ONE_TABLE, DBNamesTable.Employer);
+            //ObservableCollection<Employer> users = new ObservableCollection<Employer>();
+            //users = ReadDB<Employer>(DBProcedure.READ_ONE_TABLE, DBNamesTable.Employer);
+            //foreach(var i in users)
+            //{
+            //    Console.WriteLine(i.FirstName.ToString());
+            //}
+
+            ObservableCollection<User> users=new ObservableCollection<User>();
+            users= ReadDB<User,Employer>(DBProcedure.READ_TWO_TABLE, DBNamesTable.User,DBNamesTable.Employer);
+
             foreach(var i in users)
             {
-                Console.WriteLine(i.FirstName.ToString());
+                Console.WriteLine(i.FirstName);
             }
             #endregion
         }

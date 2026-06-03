@@ -9,13 +9,16 @@ namespace CRM
 {
     public class User:Employer
     {
+        private List<string> posts {  get; set; }=new List<string>();
         public string Login { get; set; }
         public String Password { get; set; }
-        public int PostName { get;  set; }
+        public string PostName { get;  set; }
+
 
         public User()
-        {
+        {}
 
-        }
+
+
     }
 }

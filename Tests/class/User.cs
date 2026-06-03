@@ -11,8 +11,8 @@ namespace Tests
     {
         public string Login { get; set; }
         public String Password { get; set; }
-        public int Post { get;  set; }
-
+        public int PostId { get;  set; }
+        public string PostName { get; set; }
         public User()
         {
 

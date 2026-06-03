@@ -19,6 +19,7 @@ namespace CRM
     {
         ADD_NEW_USER,
         READ_ONE_TABLE,
+        READ_TWO_TABLE,
         GET_TABLE_HEADERS
     }
     public enum DBNamesTable
@@ -275,8 +276,83 @@ namespace CRM
             return reslt;
         }
 
+        public  ObservableCollection<T> ReadDB<T, K>(DBProcedure procedure, DBNamesTable tableName, DBNamesTable tableName2)
+       where T : new()
+        {
+            //Тут база данных мне возвращает массив, с разными полями 
+            //Процедура она принимает как значение название таблицы
+            SqlConnection con = new SqlConnection(connect);
+            ObservableCollection<T> reslt = new ObservableCollection<T>();
 
-        public void ReadUser( ObservableCollection<User> collection)
+            using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
+            {
+                //Параметры, которые данная процедура принимает
+                List<string> parametrs = GetPatametrs(procedure);
+
+                //Заголовки этой таблицы
+                List<string> tableHead = new List<string>();
+
+
+                Type typeClass = typeof(T);
+                //Свойства класса
+                List<string> classProperty = new List<string>();
+                foreach (var i in typeClass.GetProperties())
+                {
+                    classProperty.Add(i.Name);
+                }
+                string[] classPropertyBasa = new string[classProperty.Count];
+                classProperty.CopyTo(classPropertyBasa);
+
+
+                con.Open();
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (parametrs.Count != 2) return null;
+
+                List<string> tablNames = new List<string>();
+                tablNames.Add(tableName.ToString());
+                tablNames.Add(tableName2.ToString());
+
+                for (int i = 0; i < parametrs.Count; i++)
+                {
+                    //Заполнение параметров
+                    cmd.Parameters.AddWithValue(parametrs[i].ToString(), tablNames[i].ToString());
+                }
+
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    T classObj = new T();
+
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        string tableheader = reader.GetName(i).ToString();
+                        for (int j = 0; j < classProperty.Count; j++)
+                        {
+                            if (!classProperty.Contains(tableheader)) break;
+                            if (classProperty[j] == reader.GetName(i).ToString())
+                            {
+                                var pr = typeClass.GetProperty(classProperty[j]);
+                                pr.SetValue(classObj, reader[i].ToString());
+                                classProperty.Remove(classProperty[j]);
+                                break;
+                            }
+                        }
+
+                    }
+                    classProperty.Clear();
+                    classProperty.AddRange(classPropertyBasa);
+                    reslt.Add(classObj);
+                }
+
+            }
+
+            return reslt;
+        }
+
+/*        public void ReadUser( ObservableCollection<User> collection)
         {
             string command = "SELECT * FROM [User] LEFT JOIN Employer ON Employer.UserId = [User].UserId;";
             using (SqlConnection con = new SqlConnection(connect))
@@ -284,6 +360,9 @@ namespace CRM
                 con.Open();
                 SqlCommand cdm = new SqlCommand(command, con);
                 SqlDataReader reader = cdm.ExecuteReader();
+
+          
+
 
                 while (reader.Read())
                 {
@@ -303,7 +382,7 @@ namespace CRM
                 }
             }
 
-        }
+        }*/
         public void ReadPost(List<string> collection)
         {
             string command = "SELECT * FROM Post ";
@@ -321,44 +400,6 @@ namespace CRM
             }
 
         }
-
-/*        public void ReadClients(ObservableCollection<Client> collection,User user)
-        {
-            string command = $"DECLARE @Login NVARCHAR(100) = N'{user.Login.ToString()}';" +
-                "SELECT * FROM Client " +
-                "WHERE EmployerId = ( SELECT Employer.EmployerId " +
-                "FROM Employer INNER JOIN [User] ON Employer.UserId = [User].UserId " +
-                "WHERE [User].Login = @Login" +
-                ");";
-
-
-            using (SqlConnection con = new SqlConnection(connect))
-            {
-                con.Open();
-                SqlCommand cdm = new SqlCommand(command, con);
-
-                SqlDataReader reader = cdm.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    var name = reader["FirstName"];
-                    var secondName = reader["MiddleName"];
-                    var thirdName = reader["LastName"];
-                    var phone = reader["PhoneNumber"];
-
-                    collection.Add(new Client
-                    {
-                        FirstName = name.ToString(),
-                        MiddleName = secondName.ToString(),
-                        LastName = thirdName.ToString(),
-                        PhoneNumber = phone.ToString(),
-                    });
-                }
-            }
-
-        }*/
-
-
 
     }
 }

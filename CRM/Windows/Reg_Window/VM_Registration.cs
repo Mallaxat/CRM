@@ -152,7 +152,7 @@ namespace CRM
                 MiddleName = this.Patronymic,
                 Login = this.Login,
                 Password = GetPassword(this.Password),
-                PostName = CheckPost()
+                PostName = CheckPost().ToString()
             };
             if (LoginService.Instance.IsLogin(user))
             {

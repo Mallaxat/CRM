@@ -94,6 +94,7 @@
     <Compile Include="class\Employer.cs" />
     <Compile Include="class\Manager.cs" />
     <Compile Include="class\User.cs" />
+    <Compile Include="Servise\AllServise.cs" />
     <Compile Include="Servise\Settings.cs" />
     <Compile Include="Servise\SqlService.cs" />
     <Compile Include="Windows\Reg_Window\RegistrationWindow.xaml.cs">
