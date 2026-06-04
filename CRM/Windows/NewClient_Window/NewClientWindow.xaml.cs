@@ -10,20 +10,22 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CRM.Servise;
 
 
-namespace CRM.Pages
+namespace CRM.Windows
 {
     /// <summary>
-    /// Логика взаимодействия для Page_login.xaml
+    /// Логика взаимодействия для NewClientWindow.xaml
     /// </summary>
-    public partial class PageClients : Page
+    public partial class NewClientWindow : Window
     {
-        public PageClients()
-        {        
+
+        public NewClientWindow()
+        {
             InitializeComponent();
+
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CRM.Servise;
+﻿
+using CRM.Servise;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace CRM
+namespace CRM.Windows
 {
     class VM_Login : INotifyPropertyChanged
     {
@@ -59,7 +60,7 @@ namespace CRM
             _settings = settings;
             cRegistration = new RelayCommand(_ =>
             {
-                _settings.serviseWindow.WindowOpen<RegistrationWindow>();
+                _settings.serviseWindow.WindowOpen<RegistrationWindow>(new VM_Registration(_settings));
             });
             cLogin = new RelayCommand(
                 _=> LoginUser(),

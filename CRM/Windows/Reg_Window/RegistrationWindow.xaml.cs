@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace CRM
+namespace CRM.Windows
 {
     /// <summary>
     /// Логика взаимодействия для RegistrationWindow.xaml
@@ -20,16 +20,12 @@ namespace CRM
     public partial class RegistrationWindow : Window
     {
         VM_Registration _vm;
-        MessageeServise serviceMessagee;
-        WindowService serviceWindow;
+
+
         public RegistrationWindow()
         {
             InitializeComponent();
-            serviceMessagee = new MessageeServise(this);
-            serviceWindow = new WindowService();
 
-            _vm = new VM_Registration(serviceMessagee, serviceWindow);
-            DataContext = _vm;
         }
 
         private void bt_enter_Click(object sender, RoutedEventArgs e)

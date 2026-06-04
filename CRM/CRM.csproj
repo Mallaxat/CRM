@@ -97,6 +97,10 @@
     <Compile Include="Servise\AllServise.cs" />
     <Compile Include="Servise\Settings.cs" />
     <Compile Include="Servise\SqlService.cs" />
+    <Compile Include="Windows\NewClient_Window\NewClientWindow.xaml.cs">
+      <DependentUpon>NewClientWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\NewClient_Window\VM_NewClient.cs" />
     <Compile Include="Windows\Reg_Window\RegistrationWindow.xaml.cs">
       <DependentUpon>RegistrationWindow.xaml</DependentUpon>
     </Compile>
@@ -116,6 +120,10 @@
     <Compile Include="Servise\RelayCommand.cs" />
     <Compile Include="Servise\WindowService.cs" />
     <Compile Include="Windows\Reg_Window\VM_Registration.cs" />
+    <Page Include="Windows\NewClient_Window\NewClientWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\Reg_Window\RegistrationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

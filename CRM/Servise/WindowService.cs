@@ -70,9 +70,10 @@ namespace CRM
 
         public Page PageOpen<VM,P>(Settings setting) where P : Page
         {
-            //Создаст нужную мне VMку
+            //Создаст нужную мне VMку и её сразу как контекст даст в пейдж
             var VM_Page=(VM)Activator.CreateInstance(typeof(VM),setting);
-            var page = (P)Activator.CreateInstance(typeof(P), VM_Page);
+            var page = (P)Activator.CreateInstance<P>();
+            page.DataContext = VM_Page;
             return page;
         }
     }

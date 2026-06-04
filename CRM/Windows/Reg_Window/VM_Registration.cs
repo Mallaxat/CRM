@@ -10,13 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace CRM
+namespace CRM.Windows
 {
     class VM_Registration : INotifyPropertyChanged
     {
         //Настройки
-        private readonly MessageeServise serviseMessege;
-        private readonly WindowService serviseWindow;
+        private readonly Settings _settings;
 
         //Свойства
         public List<string> Posts { get; set; } = new List<string>();
@@ -94,10 +93,9 @@ namespace CRM
         }
        
         //Конструктор
-        public VM_Registration(MessageeServise serviseMessege, WindowService serviseWindow)
+        public VM_Registration(Settings settings)
         {
-            this.serviseMessege = serviseMessege;
-            this.serviseWindow = serviseWindow;
+            _settings = settings;
 
             Posts = SqlService.Instance.ReadDBColumn(DBProcedure.READ_COLUMN_TABLE, DBNamesTable.Post, "PostName");
 
@@ -141,7 +139,7 @@ namespace CRM
             string massege=LoginService.Instance.CheckPassword(Password);
             if(massege != null)
             {
-                serviseMessege.Show(massege, "Не правильный пароль");
+                _settings.serviseMessege.Show(massege, "Не правильный пароль");
                 return;
             }
             User user = new User
@@ -155,11 +153,11 @@ namespace CRM
             };
             if (LoginService.Instance.IsLogin(user))
             {
-                serviseMessege.Show("Пользователь уже существует", "Регистрация");
+                _settings.serviseMessege.Show("Пользователь уже существует", "Регистрация");
                 return;
             }
-            if (LoginService.Instance.Registration(user)) serviseMessege.Show("Регистрация прошла успешно!", "Регистрация");
-            else serviseMessege.Show("Регистрация неудалась!", "Регистрация");
+            if (LoginService.Instance.Registration(user)) _settings.serviseMessege.Show("Регистрация прошла успешно!", "Регистрация");
+            else _settings.serviseMessege.Show("Регистрация неудалась!", "Регистрация");
         }
         private int CheckPost()
         {

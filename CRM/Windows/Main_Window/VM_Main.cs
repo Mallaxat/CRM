@@ -6,8 +6,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using CRM.Pages;
+using CRM.Servise;
 
-namespace CRM
+namespace CRM.Windows
 {
     class VM_Main: INotifyPropertyChanged
     {
