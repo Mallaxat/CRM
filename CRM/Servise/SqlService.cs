@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,10 +84,10 @@ namespace CRM.Servise
 
         //МЕТОДЫ СЕРВИСЫ
 
-        private string connect = ConfigurationManager.ConnectionStrings["CRM"].ConnectionString;
+        private static string connect = ConfigurationManager.ConnectionStrings["CRM"].ConnectionString;
         
         //Метод для полечения параметра процедуры
-        private List<string> GetPatametrs(DBProcedure procedureName)
+        private static List<string> GetPatametrs(DBProcedure procedureName)
         {
             string procedure = "GET_PROCEDURE_PARAMETRS";
             //Если процедура равна процедуре возврата параметров
@@ -116,7 +117,7 @@ namespace CRM.Servise
         }
         
         //Метод, для получения названия всех сущностей таблицы
-        private  List<string> GetTableHeaders(DBNamesTable tableName)
+        private List<string> GetTableHeaders(DBNamesTable tableName)
         {
             SqlConnection con = new SqlConnection(connect);
             try
@@ -147,356 +148,62 @@ namespace CRM.Servise
             return null;
         }
 
-
-        //ПУБЛИЧНЫЕ МЕТОДЫ 
-
-        //Метод соединяющий параметр процедуры и значение для этой процедуры
-        public Dictionary<string, string> JoinParametrs<T>(T classObj, DBProcedure procedureName)
+        public static class SQLClient
         {
-            if(procedureParametrs.Count!=0)procedureParametrs.Clear();
-
-            procedureParametrs = GetPatametrs(procedureName);
-
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            Type typeClass = typeof(T);
-            string clearProcParametr = String.Empty;
-
-            //перебираем свойства процедуры
-            for (int i = 0; i < procedureParametrs.Count; i++)
+            public static ObservableCollection<Client> Read(DBProcedure procedure, string login)
             {
-                clearProcParametr = procedureParametrs[i].Replace("@", "");
 
-                //Перебираем свойства класса
-                //j=propertyinfo
-                foreach (var proInfo in typeClass.GetProperties())
-                {
-
-                    if (proInfo.Name == clearProcParametr)
-                    {
-                        object value = proInfo.GetValue(classObj);
-                        result.Add($"@{clearProcParametr}", value.ToString());
-                        break;
-                    }
-                }
-            }
-            return result;
-        }
-
-        //Метод для добавления новых данных в БД
-        public void AddDB<T>(DBProcedure procedure,T classObj)
-        {
-            SqlConnection con = new SqlConnection(connect);
-            try
-            {
-                if (ListProcedure_value.Count != 0) ListProcedure_value.Clear();
-                ListProcedure_value = JoinParametrs(classObj, procedure);
-
-                string commandProcedure = procedure.ToString();
-                con.Open();
-                //Теперь в процедуру, нужно добавить все значения
-                using (SqlCommand cmd = new SqlCommand(commandProcedure, con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    //Теперь нужно передать все параметры в процедуру
-                    foreach (KeyValuePair<string, string> pair in ListProcedure_value)
-                    {
-                        string key = pair.Key;
-                        string value = pair.Value;
-
-                        cmd.Parameters.AddWithValue(key, value);
-                    }
-
-                    cmd.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex) { }
-       
-            finally
-            { 
-                if(con.State==ConnectionState.Open) con.Close();
-            }
-
-        }
-
-        //Метод для считывания данных из БЖ
-        public ObservableCollection<T> ReadDB<T>(DBProcedure procedure, DBNamesTable tableName) where T : new()
-        {
-            //Процедура она принимает как значение название таблицы
-            SqlConnection con = new SqlConnection(connect);
-            ObservableCollection<T> reslt = new ObservableCollection<T>();
-            try { 
-            using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
-            {
-                //Параметры, которые данная процедура принимает
-                List<string> parametrs = GetPatametrs(procedure);
-
-                //Заголовки этой таблицы
-                List<string> tableHead = GetTableHeaders(tableName);
+                SqlConnection con = new SqlConnection(connect);
 
 
-                Type typeClass = typeof(T);
-                //Свойства класса
-                List<string> classProperty = new List<string>();
-                foreach (var i in typeClass.GetProperties())
-                {
-                    classProperty.Add(i.Name);
-                }
+                ObservableCollection<Client> result = new ObservableCollection<Client>();
 
-                con.Open();
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                if (parametrs.Count != 1) return null;
-
-                //Заполнение параметров
-                cmd.Parameters.AddWithValue(parametrs[0].ToString(), tableName.ToString());
-
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    T classObj = new T();
-
-                    for (int i = 0; i <= classProperty.Count - 1; i++)
-                    {
-                        for (int j = 0; j <= tableHead.Count - 1; j++)
-                        {
-                            if (classProperty[i] == tableHead[j])
-                            {
-                                var pr = typeClass.GetProperty(classProperty[i]);
-                                pr.SetValue(classObj, reader[j]);
-                                break;
-                            }
-
-                        }
-                    }
-                    reslt.Add(classObj);
-                }
-
-            }
-
-            return reslt;
-            }
-            catch (Exception ex)
-            {
-                ex.ToString();
-            }
-            finally
-            {
-                if(con.State==ConnectionState.Open) con.Close(); 
-            }
-            return reslt;
-        }
-        //Чтение по определенному юзеру
-        public ObservableCollection<T> ReadDB<T>(DBProcedure procedure, DBNamesTable tableName,string condition) where T : new()
-        {
-            //Процедура она принимает как значение название таблицы
-            SqlConnection con = new SqlConnection(connect);
-            ObservableCollection<T> reslt = new ObservableCollection<T>();
-            try
-            {
                 using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
                 {
-                    //Параметры, которые данная процедура принимает
-                    List<string> parametrs = GetPatametrs(procedure);
-
-                    //Заголовки этой таблицы
-                    List<string> tableHead = GetTableHeaders(tableName);
-
-
-                    Type typeClass = typeof(T);
-                    //Свойства класса
-                    List<string> classProperty = new List<string>();
-                    foreach (var i in typeClass.GetProperties())
-                    {
-                        classProperty.Add(i.Name);
-                    }
-
                     con.Open();
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    if (parametrs.Count != 2) return null;
+                    Type _class = typeof(Client);
+                    List<string> PrParam = GetPatametrs(procedure);
+                    var ClassProperty = _class.GetProperties();
 
 
-                    //Заполнение параметров
-                    cmd.Parameters.AddWithValue(parametrs[0].ToString(), tableName.ToString());
-                    cmd.Parameters.AddWithValue(parametrs[1].ToString(), condition);
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-
+                    cmd.Parameters.AddWithValue(PrParam[0].ToString(),login);
+                    SqlDataReader reader= cmd.ExecuteReader();
+                    Client buf= new Client();
                     while (reader.Read())
                     {
-                        T classObj = new T();
-
-                        for (int i = 0; i <= classProperty.Count - 1; i++)
-                        {
-                            for (int j = 0; j <= tableHead.Count - 1; j++)
-                            {
-                                if (classProperty[i] == tableHead[j])
-                                {
-                                    var pr = typeClass.GetProperty(classProperty[i]);
-                                    pr.SetValue(classObj, reader[j]);
-                                    break;
-                                }
-
-                            }
-                        }
-                        reslt.Add(classObj);
-                    }
-
-                }
-
-                return reslt;
-            }
-            catch (Exception ex)
-            {
-                ex.ToString();
-            }
-            finally
-            {
-                if (con.State == ConnectionState.Open) con.Close();
-            }
-            return reslt;
-        }
-        public ObservableCollection<T> ReadDB<T, K>(DBProcedure procedure, DBNamesTable tableName, DBNamesTable tableName2)
-       where T : new()
-        {
-            //Процедура она принимает как значение название таблицы
-            SqlConnection con = new SqlConnection(connect);
-
-            ObservableCollection<T> reslt = new ObservableCollection<T>();
-            try
-            {
-                using (SqlCommand cmd = new SqlCommand(procedure.ToString(), con))
-                {
-                    //Параметры, которые данная процедура принимает
-                    List<string> parametrs = GetPatametrs(procedure);
-
-                    //Заголовки этой таблицы
-                    List<string> tableHead = new List<string>();
-
-
-                    Type typeClass = typeof(T);
-                    //Свойства класса
-                    List<string> classProperty = new List<string>();
-                    foreach (var i in typeClass.GetProperties())
-                    {
-                        classProperty.Add(i.Name);
-                    }
-                    string[] classPropertyBasa = new string[classProperty.Count];
-                    classProperty.CopyTo(classPropertyBasa);
-
-
-                    con.Open();
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    if (parametrs.Count != 2) return null;
-
-                    List<string> tablNames = new List<string>();
-                    tablNames.Add(tableName.ToString());
-                    tablNames.Add(tableName2.ToString());
-
-                    for (int i = 0; i < parametrs.Count; i++)
-                    {
-                        //Заполнение параметров
-                        cmd.Parameters.AddWithValue(parametrs[i].ToString(), tablNames[i].ToString());
-                    }
-
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    while (reader.Read())
-                    {
-                        T classObj = new T();
-
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
                             string tableheader = reader.GetName(i).ToString();
-                            for (int j = 0; j < classProperty.Count; j++)
+
+                            for (int j = 0; j < ClassProperty.Length; j++)
                             {
-                                if (!classProperty.Contains(tableheader)) break;
-                                if (classProperty[j] == reader.GetName(i).ToString())
+                                if(tableheader==ClassProperty[j].ToString())
                                 {
-                                    var pr = typeClass.GetProperty(classProperty[j]);
-                                    pr.SetValue(classObj, reader[i].ToString());
-                                    classProperty.Remove(classProperty[j]);
-                                    break;
+                                    var property = _class.GetProperty(reader[i].ToString());
+                                    property.SetValue(buf, reader[i].ToString());
                                 }
+     
                             }
 
                         }
-                        classProperty.Clear();
-                        classProperty.AddRange(classPropertyBasa);
-                        reslt.Add(classObj);
-                    }
 
-                }
-                return reslt;
-            }
-            catch (Exception ex)
-            {
-                ex.ToString();
-            }
-            finally
-            {
-                if (con.State == ConnectionState.Open) con.Close();
-            }
-            return reslt;
-
-
-        }
-
-        //Метод для считывания 1 колонки таблицы
-        public List<string> ReadDBColumn(DBProcedure procedure, DBNamesTable tableName, string header)
-        {
-            SqlConnection con = new SqlConnection(connect);
-            List<string> result = new List<string>();
-            try
-            {
-                using (SqlCommand cdm = new SqlCommand(procedure.ToString(), con))
-                {
-                    cdm.CommandType = CommandType.StoredProcedure;
-
-                    con.Open();
-
-                    //Все заголовки этой таблицы
-                    List<string> headerTable = GetTableHeaders(tableName);
-                    if (!headerTable.Contains(header))
-                    {
-                        throw new Exception("ReadDBColumn SQL header is not find");
-                    }
-
-                    List<string> parametrs = GetPatametrs(procedure);
-                    if (parametrs.Count > 1)
-                    {
-                        throw new Exception($"ReadDBColumn SQL procedure {procedure.ToString()} has {parametrs.Count} atrebut");
-                    }
-
-                    cdm.Parameters.AddWithValue(parametrs[0], tableName.ToString());
-
-                    SqlDataReader reader = cdm.ExecuteReader();
-
-
-                    while (reader.Read())
-                    {
-                        result.Add(reader[header].ToString());
+                        result.Add(buf);
+                        buf = new Client();
                     }
 
                 }
                 return result;
             }
-            catch (Exception ex)
-            {
-                ex.ToString();
-            }
-            finally
-            {
-                if (con.State == ConnectionState.Open) con.Close();
-            }
-            return result;
+
         }
 
-        //Вариант изменений колоса
+        //Метод для чтения одной таблицы типа клиент
 
+        //Метод для обновления данных одной таблицы типа клиент
+        //Метод для удаления одного значения из данных одной таблицы типа клиент
+        //Метод для добавления нового объекта типа клиент
 
 
 

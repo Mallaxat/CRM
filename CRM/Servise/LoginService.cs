@@ -25,7 +25,8 @@ namespace CRM.Servise
             Instance = this;
             //Тут пока проблемки, нужно юзер и емплоер джоинить
             // SqlService.Instance.ReadUser(ListUsers);
-            ListUsers = SqlService.Instance.ReadDB<User, Employer>(DBProcedure.READ_TWO_TABLE, DBNamesTable.User, DBNamesTable.Employer);
+            //ListUsers = SqlService.Instance.ReadDB<User, Employer>(DBProcedure.READ_TWO_TABLE, DBNamesTable.User, DBNamesTable.Employer);
+            ListUsers = SQLOLD.Instance.ReadDB<User, Employer>(DBProcedure.READ_TWO_TABLE, DBNamesTable.User, DBNamesTable.Employer);
         }
     
         //Регистрация
@@ -33,7 +34,7 @@ namespace CRM.Servise
         {
             if(user== null) return false;
             ListUsers.Add(user);
-            SqlService.Instance.AddDB(DBProcedure.ADD_NEW_USER, user); 
+            SQLOLD.Instance.AddDB(DBProcedure.ADD_NEW_USER, user); 
             return ListUsers.Contains(user);
         }
         //Логирование 

@@ -10,7 +10,8 @@ namespace CRM.Servise
     {
         public readonly MessageeServise serviseMessege;
         public readonly WindowService serviseWindow;
-        public readonly SqlService serviseSQL;
+        //public readonly SqlService serviseSQL;
+        public readonly SQLOLD serviseSQL;
         public string Password {  get; set; }
 
         public User user;
@@ -19,7 +20,7 @@ namespace CRM.Servise
         {
             this.serviseMessege = serviseMessege;
             this.serviseWindow = serviseWindow;
-            this.serviseSQL = SqlService.Instance;
+            this.serviseSQL = SQLOLD.Instance;
             this.user = user;
             if(user==null) user=new User();
         }

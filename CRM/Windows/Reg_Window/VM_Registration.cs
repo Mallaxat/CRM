@@ -97,7 +97,7 @@ namespace CRM.Windows
         {
             _settings = settings;
 
-            Posts = SqlService.Instance.ReadDBColumn(DBProcedure.READ_COLUMN_TABLE, DBNamesTable.Post, "PostName");
+            Posts = SQLOLD.Instance.ReadDBColumn(DBProcedure.READ_COLUMN_TABLE, DBNamesTable.Post, "PostName");
 
              AddRegistration = new RelayCommand(  
                 _ => Registration(),

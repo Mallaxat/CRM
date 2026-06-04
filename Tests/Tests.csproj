@@ -47,6 +47,7 @@
     <Compile Include="class\Client.cs" />
     <Compile Include="class\Employer.cs" />
     <Compile Include="class\Manager.cs" />
+    <Compile Include="class\SqlService.cs" />
     <Compile Include="class\User.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

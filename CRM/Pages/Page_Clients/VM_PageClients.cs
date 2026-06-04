@@ -33,7 +33,7 @@ namespace CRM.Pages
             {
                 if (_settings == value || value == null) return;
                 _settings = value;
-                ListClients = SqlService.Instance.ReadDB<Client>(DBProcedure.READ_ONE_TABLE_CONDITION, DBNamesTable.Client, _Settings.user.Login);
+                ListClients = SQLOLD.Instance.ReadDB<Client>(DBProcedure.READ_ONE_TABLE_CONDITION, DBNamesTable.Client, _Settings.user.Login);
                 OnPropertyChanged();
             }
         }

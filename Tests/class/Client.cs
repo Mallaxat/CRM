@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tests
 {
-   public class Client
+    public class Client
     {
         public string FirstName { get; set; }
 
@@ -15,6 +15,8 @@ namespace Tests
         public string MiddleName { get; set; }
 
         public string PhoneNumber { get; set; }
+
+
 
     }
 }

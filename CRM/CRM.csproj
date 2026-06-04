@@ -96,6 +96,7 @@
     <Compile Include="class\User.cs" />
     <Compile Include="Servise\AllServise.cs" />
     <Compile Include="Servise\Settings.cs" />
+    <Compile Include="Servise\SQLOLD.cs" />
     <Compile Include="Servise\SqlService.cs" />
     <Compile Include="Windows\NewClient_Window\NewClientWindow.xaml.cs">
       <DependentUpon>NewClientWindow.xaml</DependentUpon>
