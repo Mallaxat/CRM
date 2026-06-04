@@ -42,8 +42,8 @@ namespace CRM.Pages
         public ObservableCollection<Client> ListClients { get; set; } = new ObservableCollection<Client>();
 
         //Команды
-        public ICommand AddClient;
-        public ICommand DeleteClient;
+        public ICommand AddClient { get; }
+        public ICommand DeleteClient { get; }
 
         public VM_PageClients(Settings settings)
         {

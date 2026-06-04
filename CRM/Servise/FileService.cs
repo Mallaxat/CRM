@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace CRM
+namespace CRM.Servise
 {
     public enum FilePath
     {

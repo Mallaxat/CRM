@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace CRM
+namespace CRM.Servise
 {
     public enum DBProcedure
     {
@@ -32,7 +32,7 @@ namespace CRM
         User
     }
 
-    class SqlService
+    public class SqlService
     {
         //Свойства
         public static SqlService Instance {  get; set; } = new SqlService();
@@ -494,6 +494,11 @@ namespace CRM
             }
             return result;
         }
+
+        //Вариант изменений колоса
+
+
+
 
 
     }

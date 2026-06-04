@@ -1,5 +1,4 @@
-﻿using CRM.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -14,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using CRM.Servise;
 
 namespace CRM.Windows
 {
@@ -24,16 +24,12 @@ namespace CRM.Windows
     {
         VM_Login _vm ;
         Settings _settings ;
-        //MessageeServise serviceMessagee;
-        //WindowService serviceWindow;
+
         
         public Registration_Window()
         {
             InitializeComponent();
             _settings = new Settings(new MessageeServise(this), new WindowService(),new User());
-            //serviceMessagee = new MessageeServise(this);
-            //serviceWindow = new WindowService();
-            
 
             _vm = new VM_Login(_settings);
 

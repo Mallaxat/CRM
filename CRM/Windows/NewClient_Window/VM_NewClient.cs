@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CRM.Windows
@@ -73,7 +74,7 @@ namespace CRM.Windows
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
         }
         //Команды
-        ICommand AddClient;
+        public ICommand AddClient { get; }
         
         //Конструктор
         public VM_NewClient(Settings settings)
@@ -88,7 +89,15 @@ namespace CRM.Windows
         //Методы
         private void ADD()
         {
-
+            Client client = new Client
+            {
+                FirstName = this.FirstName,
+                LastName = this.LastName,
+                MiddleName = this.MiddleName,
+                PhoneNumber = this.PhoneNumber,
+            };
+            _settings.serviseSQL.AddDB<Client>(DBProcedure.ADD_NEW_USER, client);
+            MessageBox.Show("Добавлено");
         }
     }
 }

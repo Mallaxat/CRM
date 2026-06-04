@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace CRM
+namespace CRM.Servise
 {
 
     public class MessageeServise : IntMassege

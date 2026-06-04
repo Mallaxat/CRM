@@ -27,7 +27,7 @@ namespace CRM.Windows
             InitializeComponent();
 
         }
-
+        //КОСТЫЛИ
         private void bt_enter_Click(object sender, RoutedEventArgs e)
         {
             _vm.Password = tb_Pass.SecurePassword.Copy();

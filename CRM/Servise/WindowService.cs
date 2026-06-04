@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 
-namespace CRM
+namespace CRM.Servise
 {
     public class WindowService
     {
@@ -66,7 +66,6 @@ namespace CRM
 
             currentWindow.Close();
         }
-
 
         public Page PageOpen<VM,P>(Settings setting) where P : Page
         {
